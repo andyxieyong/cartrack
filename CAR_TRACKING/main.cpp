@@ -42,6 +42,8 @@
 //added by messi
 #include <time.h>
 
+#include "switch_float.h"
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +65,7 @@ char WIN_B[]="2D-mapping";			//movie name
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+FILE *resFP;
 
 int main(void)
 {
@@ -74,11 +76,22 @@ int main(void)
 	int fnum=0;					//frame number 
 	bool FLAG = true;			//file end flag
 
+    /* for measurement */
+    struct timeval tv;
+    struct timeval tv_1process_start, tv_1process_end;
+    float one_process;
+
 	//parameters
-	double thresh = -0.5;												//threshold score of detection (default :0.0)
-	double overlap = 0.4;												//threshold overlap parameter (default :0.4)
-	double ratio = 1;													//resize ratio
+	FLOAT thresh = -0.5;												//threshold score of detection (default :0.0)
+	FLOAT overlap = 0.4;												//threshold overlap parameter (default :0.4)
+	FLOAT ratio = 1;													//resize ratio
 	int TH_length = 80;													//tracking length threshold
+
+    /* Output file for detect result */
+    resFP = fopen("detect_result.dat", "w");
+
+    double time_measure;
+    time_measure = (double)cv::getTickCount();
 
 	//get laser_save data pass (file should be in savedata folder)
 	char *FPASS= get_file_pass(ldata_name);	
@@ -129,7 +142,11 @@ int main(void)
 
 	clock_t start, end;
 	
-	for(int im=1;im<20;im++){
+    //	for(int im=1;im<20;im++){
+	for(int im=1;im<=11;im++){
+
+      gettimeofday(&tv_1process_start, NULL);
+
 		//IplImage *IMG;	//inputed-image 
 		////load movie 
 		//if((IMG=cvQueryFrame(capt))==NULL){printf("end of movie\n");break;}
@@ -149,11 +166,11 @@ int main(void)
 		//for(int k=0;k<24;k++){printf("âÊëf%d\n",(int)(unsigned char)IM_D -> imageData[k]);}
 
 		///**HOG(é©çÏ)*/
-		//double **h;
+		//FLOAT **h;
 		/////**h = new int[1000];*/
-		//h = (double**)malloc(2*sizeof(double*));
-		//h[0] =(double*) malloc(64*sizeof(double));
-		//h[1] =(double*) malloc(64*sizeof(double));
+		//h = (FLOAT**)malloc(2*sizeof(FLOAT*));
+		//h[0] =(FLOAT*) malloc(64*sizeof(FLOAT));
+		//h[1] =(FLOAT*) malloc(64*sizeof(FLOAT));
 		//int a=0;
 		//for(int i=0;i<64;i+=0)
 		//{
@@ -167,8 +184,8 @@ int main(void)
 		//		a++;
 		//}
 		//
-		//double Dx,Dy,G, m[20];
-		//long double l;
+		//FLOAT Dx,Dy,G, m[20];
+		//long FLOAT l;
 		//int z,z2;
 		//for(z2=0;z2<20;z2++){m[z2]=0;}
 		//for(int c=9;c<49;c+=8)
@@ -179,7 +196,7 @@ int main(void)
 		//	Dy = *(h[0]+c+d+8)-*(h[0]+c+d-8);
 		//	//printf("Dx%f\n",Dx);
 		//	G= sqrt(pow(Dx,2.0)+pow(Dy,2.0));
-		//	l = atan2((long double)Dy,(long double)Dx)/3.141592*180.0;
+		//	l = atan2((long FLOAT)Dy,(long FLOAT)Dx)/3.141592*180.0;
 		//	//printf("äpìx%f\n",l);
 		//	if(l>0)
 		//	{
@@ -219,7 +236,7 @@ int main(void)
 
 		//IplImage *R_I = ipl_resize(IM_D,ratio);								//trime image for detection
 		IplImage *R_I = IM_D;
-		double *A_SCORE = ini_ac_score(R_I);								//alloc accumulated score
+		FLOAT *A_SCORE = ini_ac_score(R_I);								//alloc accumulated score
 		RESULT *CUR=car_detection(R_I,MO,thresh,&D_NUMS,A_SCORE,overlap);	//detect car-boundary boxes
 		//finalization(CUR,LR,&P_I,A_SCORE,R_I,TH_length);					//calculate tracking information		
 
@@ -257,18 +274,32 @@ int main(void)
 		//SaveIm = combine_image (2, cimg);
 		//cvSaveImage(pass,SaveIm);
 
-		
+        gettimeofday(&tv_1process_end, NULL);
+        tvsub(&tv_1process_end, &tv_1process_start, &tv);
+        one_process = tv.tv_sec * 1000.0 + (float)tv.tv_usec / 1000.0;
+        
+        printf("1process : %f\n", one_process);		
+        
+
 		end = clock();
+#if 0
 		printf("end time is %d\n",end);	
 		printf("##################################################\n");
                 printf("time is %d\n",end-start);
+#endif
 		start = 0;
 		end = 0;
-		int IN_KEY=cvWaitKey(0);
-		if(IN_KEY==0x1b) break;
+#if 1
+        int IN_KEY=cvWaitKey(0);
+        //        if(IN_KEY==0x1b) break;
+        //        if(IN_KEY==1048603) // if 'Esc' key is typed
+        if(IN_KEY=='\x1b') // if 'Esc' key is typed
+          break;  
+#endif
 		start = clock();
+#if 0
 		printf( "start time is %d\n", start);
-
+#endif
 		//release data
 		//Release_sdata(Sdata);						//release scan point data
 		cvReleaseImage(&R_I);						//release resized image
@@ -295,6 +326,13 @@ int main(void)
 
 	s_free(FPASS);		//release laser_file pass
 	//s_free(MPASS);		//release movie file pass
+
+
+    time_measure = (double)cv::getTickCount() - time_measure;
+    printf("execution time : %fms\n", time_measure*1000./cv::getTickFrequency());
+
+    fprintf(resFP, "execution time : %fms\n", time_measure*1000./cv::getTickFrequency());
+    fclose(resFP);
 
 	return 0;
 }
