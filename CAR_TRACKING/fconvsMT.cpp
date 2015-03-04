@@ -13,6 +13,7 @@
 //#include <process.h>
 
 #include <pthread.h>
+#include <unistd.h>
 
 //Original header
 #include "MODEL_info.h"		//File information

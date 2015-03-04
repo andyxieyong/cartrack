@@ -41,6 +41,7 @@ using namespace std;
 #include "Common.h"
 
 #include <pthread.h>
+#include <unistd.h>
 
 #include "switch_float.h"
 
