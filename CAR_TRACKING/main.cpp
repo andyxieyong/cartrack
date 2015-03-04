@@ -8,27 +8,27 @@
 
 
 //OpenCV library
-//#include "cv.h"			
+//#include "cv.h"
 //#include "cxcore.h"
-//#include "highgui.h"	
+//#include "highgui.h"
 #include "cv.h"
 #include "highgui.h"
 #include "cxcore.h"
 #ifdef _DEBUG
 //DebugÉÇÅ[ÉhÇÃèÍçá
-#pragma comment(lib,"cv200d.lib") 
-#pragma comment(lib,"cxcore200d.lib") 
-#pragma comment(lib,"cvaux200d.lib") 
-#pragma comment(lib,"highgui200d.lib") 
+#pragma comment(lib,"cv200d.lib")
+#pragma comment(lib,"cxcore200d.lib")
+#pragma comment(lib,"cvaux200d.lib")
+#pragma comment(lib,"highgui200d.lib")
 #else
 //ReleaseÉÇÅ[ÉhÇÃèÍçá
-#pragma comment(lib,"cv200.lib") 
-#pragma comment(lib,"cxcore200.lib") 
-#pragma comment(lib,"cvaux200.lib") 
-#pragma comment(lib,"highgui200.lib") 
+#pragma comment(lib,"cv200.lib")
+#pragma comment(lib,"cxcore200.lib")
+#pragma comment(lib,"cvaux200.lib")
+#pragma comment(lib,"highgui200.lib")
 #endif
 //C++ library
-#include <stdio.h>		
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -55,12 +55,12 @@ int main(void);	//main function (Object detection)
 
 /////////////////////////////////////////
 //data name
-char ldata_name[]="2010_2_3.txt";		//laser data name 
+char ldata_name[]="2010_2_3.txt";		//laser data name
 char mov_name[] = "out.avi";		//movie name
 
 /////////////////////////////////////////
 //window name
-char WIN_A[]="CAR_TRACKING";		//laser data name 
+char WIN_A[]="CAR_TRACKING";		//laser data name
 char WIN_B[]="2D-mapping";			//movie name
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ int main(void)
 	CvCapture *capt;			//movie file capture
 	fpos_t curpos,fsize;		//file size
 	int ss=0;					//image number
-	int fnum=0;					//frame number 
+	int fnum=0;					//frame number
 	bool FLAG = true;			//file end flag
 
     /* for measurement */
@@ -94,7 +94,7 @@ int main(void)
     time_measure = (double)cv::getTickCount();
 
 	//get laser_save data pass (file should be in savedata folder)
-	char *FPASS= get_file_pass(ldata_name);	
+	char *FPASS= get_file_pass(ldata_name);
 
 	int i;
 	printf("FPASS:");
@@ -103,7 +103,7 @@ int main(void)
 	}
 	printf("\n");
 
-	//open save file 
+	//open save file
 	if ((fp = fopen(FPASS,"rb")) == NULL) { printf("file open error!!\n"); exit(EXIT_FAILURE);}
 
 	//get car-detector model
@@ -123,8 +123,8 @@ int main(void)
 	//cvNamedWindow(WIN_B,CV_WINDOW_AUTOSIZE);		//for scan point 2D mapping
 
 	//get movie-file pass
-	//char *MPASS= get_file_pass(mov_name);	
-	////load movie file 
+	//char *MPASS= get_file_pass(mov_name);
+	////load movie file
 	//printf("%s\n",MPASS);
 	//if((capt=cvCaptureFromAVI(MPASS))==NULL){printf("movie open error!!\n"); exit(EXIT_FAILURE);}
 
@@ -134,21 +134,21 @@ int main(void)
 
 	//load laser and movie data
 	//for(int im=ss;im<2000;im++)
-	
+
 	/*
 		added by messi
 		timer
 	*/
 
 	clock_t start, end;
-	
+
     //	for(int im=1;im<20;im++){
 	for(int im=1;im<=11;im++){
 
       gettimeofday(&tv_1process_start, NULL);
 
-		//IplImage *IMG;	//inputed-image 
-		////load movie 
+		//IplImage *IMG;	//inputed-image
+		////load movie
 		//if((IMG=cvQueryFrame(capt))==NULL){printf("end of movie\n");break;}
 
 		////create and resize 640x480 Image (for detection and tracking)
@@ -158,7 +158,7 @@ int main(void)
 		IplImage *IM_D=load_suc_image(im);
 
 
-		//printf("â°í∑Ç≥%d\n",3 * IM_D -> width);    
+		//printf("â°í∑Ç≥%d\n",3 * IM_D -> width);
 		//printf("âÊëf%d\n",(int)(unsigned char)IM_D -> imageData[0]);
 		//printf("âÊëf%d\n",(int)(unsigned char)IM_D -> imageData[2*IM_D->widthStep]);
 		//printf("âÊëf%d\n",(int)(unsigned char)IM_D -> imageData[1920]);
@@ -174,7 +174,7 @@ int main(void)
 		//int a=0;
 		//for(int i=0;i<64;i+=0)
 		//{
-		//	for(int k=0;k<24;k+=3)	
+		//	for(int k=0;k<24;k+=3)
 		//	{
 		//		*(h[0]+i) = (int)(unsigned char)IM_D -> imageData[k+a*IM_D->widthStep];
 		//		//printf("h;%d\n",*(h[0]+i));
@@ -232,13 +232,13 @@ int main(void)
 		///////////Car-Detection//////////////
 		//////////////////////////////////////
 
-		int D_NUMS=0;								//# of detected-object		
+		int D_NUMS=0;								//# of detected-object
 
 		//IplImage *R_I = ipl_resize(IM_D,ratio);								//trime image for detection
 		IplImage *R_I = IM_D;
 		FLOAT *A_SCORE = ini_ac_score(R_I);								//alloc accumulated score
 		RESULT *CUR=car_detection(R_I,MO,thresh,&D_NUMS,A_SCORE,overlap);	//detect car-boundary boxes
-		//finalization(CUR,LR,&P_I,A_SCORE,R_I,TH_length);					//calculate tracking information		
+		//finalization(CUR,LR,&P_I,A_SCORE,R_I,TH_length);					//calculate tracking information
 
 		//////////////////////////////////////
 		//////////laser-radar fusion//////////
@@ -246,7 +246,7 @@ int main(void)
 
 		////get scan-point data
 		//SCANDATA *Sdata=get_s_data(fp,IM_D,&curpos);
-		//radar_data_fusion(Sdata,IM_D,CUR,&P_I);									//draw scan point on image 
+		//radar_data_fusion(Sdata,IM_D,CUR,&P_I);									//draw scan point on image
 
 		//////////////////////////////////////
 		/////////////visualization////////////
@@ -261,7 +261,7 @@ int main(void)
 		cvShowImage(WIN_A,IM_D);											//show image (RESULT & scan-point)
 		//cvShowImage(WIN_B,TDMAP);											//show 2D scan-point MAP
 
-		//update result 
+		//update result
 		//update_result(LR,CUR);												//update_result
 
 		//save result
@@ -277,13 +277,13 @@ int main(void)
         gettimeofday(&tv_1process_end, NULL);
         tvsub(&tv_1process_end, &tv_1process_start, &tv);
         one_process = tv.tv_sec * 1000.0 + (float)tv.tv_usec / 1000.0;
-        
-        printf("1process : %f\n", one_process);		
-        
+
+        printf("1process : %f\n", one_process);
+
 
 		end = clock();
 #if 0
-		printf("end time is %d\n",end);	
+		printf("end time is %d\n",end);
 		printf("##################################################\n");
                 printf("time is %d\n",end-start);
 #endif
@@ -294,7 +294,7 @@ int main(void)
         //        if(IN_KEY==0x1b) break;
         //        if(IN_KEY==1048603) // if 'Esc' key is typed
         if(IN_KEY=='\x1b') // if 'Esc' key is typed
-          break;  
+          break;
 #endif
 		start = clock();
 #if 0
@@ -307,7 +307,7 @@ int main(void)
 
 		fnum++;
 		printf("No %d\n",fnum);
-	
+
 	}
 
 	//close window
@@ -315,13 +315,13 @@ int main(void)
 	//cvDestroyWindow(WIN_B);	//destroy window
 
 	//release car-detector-model
-	free_model(MO);						
+	free_model(MO);
 
 	//release detection result
-	release_result(LR);					
+	release_result(LR);
 
 	//close and release file information
-	fclose(fp);			//close laser_file 
+	fclose(fp);			//close laser_file
 	//cvReleaseCapture(&capt);
 
 	s_free(FPASS);		//release laser_file pass
