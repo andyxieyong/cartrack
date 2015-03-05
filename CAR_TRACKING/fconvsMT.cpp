@@ -7,7 +7,7 @@
 /////fconvsMT.cpp  convolute features and filter  /////////////////////////////////////////////////////////////////
 
 //C++ library (thread-functions are only supported by windows)
-#include <stdio.h>		
+#include <stdio.h>
 #include <stdlib.h>
 //#include <windows.h>
 //#include <process.h>
@@ -56,7 +56,7 @@ void* process(void *thread_arg) {
   thread_data *args = (thread_data *)thread_arg;
   FLOAT *A = args->A;	//feature
   FLOAT *B = args->B;	//filter
-  FLOAT *C = args->C;	//output 
+  FLOAT *C = args->C;	//output
   int *A_dims = args->A_dims;
   int *B_dims = args->B_dims;
   int *C_dims = args->C_dims;
@@ -70,24 +70,24 @@ void* process(void *thread_arg) {
   FLOAT *A_src = A;
   FLOAT *B_src = B;
 
-  for (int f = 0; f < num_features; f++) 
+  for (int f = 0; f < num_features; f++)
   {
 	  FLOAT *dst = C;
-	  FLOAT *A_src = A + f*A_SQ;      
+	  FLOAT *A_src = A + f*A_SQ;
 	  FLOAT *B_src = B + f*B_SQ;
 	  int XA0 = 0;
-	  for (int x = 0; x < C_dims[1]; x++) 
-	  {		
-		  FLOAT *A_src2 =A_src+XA0; 
+	  for (int x = 0; x < C_dims[1]; x++)
+	  {
+		  FLOAT *A_src2 =A_src+XA0;
 		  XA0+=A_dims[0];
-		  for (int y = 0; y < C_dims[0]; y++) 
+		  for (int y = 0; y < C_dims[0]; y++)
 		  {
 			  FLOAT val = 0;
 			  FLOAT *A_off = A_src2+y;
 			  FLOAT *B_off = B_src;
-			  for (int xp = 0; xp < B_dims[1]; xp++) 
+			  for (int xp = 0; xp < B_dims[1]; xp++)
 			  {
-				  switch(B_dims[0]) 
+				  switch(B_dims[0])
 				  {
 				  case 20: val += A_off[19] * B_off[19];
 				  case 19: val += A_off[18] * B_off[18];
@@ -95,13 +95,13 @@ void* process(void *thread_arg) {
 				  case 17: val += A_off[16] * B_off[16];
 				  case 16: val += A_off[15] * B_off[15];
 				  case 15: val += A_off[14] * B_off[14];
-				  case 14: val += A_off[13] * B_off[13];					
+				  case 14: val += A_off[13] * B_off[13];
 				  case 13: val += A_off[12] * B_off[12];
 				  case 12: val += A_off[11] * B_off[11];
 				  case 11: val += A_off[10] * B_off[10];
 				  case 10: val += A_off[9] * B_off[9];
 				  case 9: val += A_off[8] * B_off[8];
-				  case 8: val += A_off[7] * B_off[7];					
+				  case 8: val += A_off[7] * B_off[7];
 				  case 7: val += A_off[6] * B_off[6];
 				  case 6: val += A_off[5] * B_off[5];
 				  case 5: val += A_off[4] * B_off[4];
@@ -109,19 +109,19 @@ void* process(void *thread_arg) {
 				  case 3: val += A_off[2] * B_off[2];
 				  case 2: val += A_off[1] * B_off[1];
 				  case 1: val += A_off[0] * B_off[0];
-					  break;	  
-				  default:	
-					  FLOAT *A_temp = A_off;						
-					  FLOAT *B_temp = B_off;	  
-					  for (int yp = 0; yp < B_dims[0]; yp++) 	  
+					  break;
+				  default:
+					  FLOAT *A_temp = A_off;
+					  FLOAT *B_temp = B_off;
+					  for (int yp = 0; yp < B_dims[0]; yp++)
 					  {
 						  val += *(A_temp++) * *(B_temp++);
 					  }
 				  }
 				  A_off+=A_dims[0];
 				  B_off+=B_dims[0];
-			  }			 
-              *(dst++) += val;		
+			  }
+              *(dst++) += val;
 		  }
 	  }
 	  A_src+=A_SQ;
@@ -150,21 +150,21 @@ void* processS(void *thread_arg) {
 	int width2 = (int)(B_dims[1]/2.0);
 
 
-	const int A_SQ = A_dims[0]*A_dims[1];      
+	const int A_SQ = A_dims[0]*A_dims[1];
 	const int B_SQ = B_dims[0]*B_dims[1];
 	const int T_L  = width2*A_dims[0];
 	const int CP_L = width1*A_dims[0];
 	const int XF_L = A_dims[1]-width1-width2;
 	const int CP_L_S = CP_L*sizeof(FLOAT);
 
-	for (int f = 0; f < num_features; f++) 
+	for (int f = 0; f < num_features; f++)
 	{
 		FLOAT *dst = C;
-		FLOAT *A_src = A + f*A_SQ;      
+		FLOAT *A_src = A + f*A_SQ;
 		FLOAT *B_src = B + f*B_SQ;
 		FLOAT *F_src = F + f*A_SQ;
 		int XA = 0;
-		for (int x = 0; x < C_dims[1]; x++) 
+		for (int x = 0; x < C_dims[1]; x++)
 		{
 			// generate tmp data for band of output
 			memcpy(T, A_src + XA, CP_L_S);
@@ -173,19 +173,19 @@ void* processS(void *thread_arg) {
 			FLOAT *copy_dst = T;
 			FLOAT *copy_end = T + T_L;
 			FLOAT *copy_src = F_src + xf*A_dims[0];
-			while (copy_dst < copy_end) 
+			while (copy_dst < copy_end)
 			{
 				*copy_dst += *copy_src;
 				copy_dst++;
-				copy_src++;     
+				copy_src++;
 			}
 
-			for (int y = 0; y < C_dims[0]; y++) 
+			for (int y = 0; y < C_dims[0]; y++)
 			{
 				FLOAT val = 0;
 				FLOAT *T_off = T+y;
 				FLOAT *B_off = B_src;
-				for (int xp = 0; xp < width1; xp++) 
+				for (int xp = 0; xp < width1; xp++)
 				{
 					switch(B_dims[0]) {
 					  case 20: val += T_off[19] * B_off[19];
@@ -209,10 +209,10 @@ void* processS(void *thread_arg) {
 					  case 2: val += T_off[1] * B_off[1];
 					  case 1: val += T_off[0] * B_off[0];
 						  break;
-					  default:	  
+					  default:
 						  FLOAT *T_temp = T_off;
 						  FLOAT *B_temp = B_off;
-						  for (int yp = 0; yp < B_dims[0]; yp++) 
+						  for (int yp = 0; yp < B_dims[0]; yp++)
 						  {
 							  val += *(T_temp++) * *(B_temp++);
 						  }
@@ -244,7 +244,7 @@ FLOAT **fconvsMT(FLOAT*feat,FLOAT*flfeat,FLOAT**filter,int *sym_info,int start,i
   end=end-1;
 
   int status;
-  
+
   const int len=end-start+1;
   FLOAT **Output=(FLOAT**)malloc(sizeof(FLOAT*)*len);		//Output (cell)
   // start threads
@@ -252,7 +252,7 @@ FLOAT **fconvsMT(FLOAT*feat,FLOAT*flfeat,FLOAT**filter,int *sym_info,int start,i
   //HANDLE *ts = (HANDLE *)calloc(len, sizeof(HANDLE));
   pthread_t *ts = (pthread_t *)calloc(len, sizeof(HANDLE));
   unsigned int thID;
-  
+
   for(int ii=0;ii<len;ii++)
     {
       td[ii].A=feat;
@@ -264,35 +264,35 @@ FLOAT **fconvsMT(FLOAT*feat,FLOAT*flfeat,FLOAT**filter,int *sym_info,int start,i
       td[ii].B_dims[0]=B_SIZE[ii][0];
       td[ii].B_dims[1]=B_SIZE[ii][1];
       td[ii].B_dims[2]=31;
-      
-      //compute size of output 
-      int height = td[ii].A_dims[0] - td[ii].B_dims[0] + 1;		
+
+      //compute size of output
+      int height = td[ii].A_dims[0] - td[ii].B_dims[0] + 1;
       int width = td[ii].A_dims[1] - td[ii].B_dims[1] + 1;
-      
+
       if (height < 1 || width < 1)
         {
           printf("Invalid input: B should be smaller than A\n");
           exit(0);
         }
-      
+
       td[ii].C_dims[0]=height;
       td[ii].C_dims[1]=width;
       td[ii].C=(FLOAT*)calloc(height*width,sizeof(FLOAT));
-      
+
       int sym = sym_info[ii+start];
-      
+
       //non_symmetric
-      if (sym ==0) 
+      if (sym ==0)
         {
           if (pthread_create(&ts[ii], NULL, process, (void*)&td[ii])) // thread id,thread_type,function   for Linux(pthread)
-            //if ((ts[ii]=(HANDLE)_beginthreadex(NULL,0,process,(void*)&td[ii],0,&thID))==0) 
+            //if ((ts[ii]=(HANDLE)_beginthreadex(NULL,0,process,(void*)&td[ii],0,&thID))==0)
             {
-              printf("Error creating thread\n"); 
+              printf("Error creating thread\n");
               exit(0);
             }
-        } 
+        }
       //symmetric
-      else 
+      else
         {
           int T_dims[2];
           T_dims[0] = td[ii].A_dims[0];
@@ -301,28 +301,28 @@ FLOAT **fconvsMT(FLOAT*feat,FLOAT*flfeat,FLOAT**filter,int *sym_info,int start,i
           /*original :*/if (pthread_create(&ts[ii], NULL, processS, (void*)&td[ii])) //for Linux(pthread)
             //if ((ts[ii]=(HANDLE)_beginthreadex(NULL,0,processS,(void*)&td[ii],0,&thID))==0)
             {
-              printf("Error creating thread\n"); 
+              printf("Error creating thread\n");
               exit(0);
             }
         }
-      
+
       M_size[ii*2]=height;
       M_size[ii*2+1]=width;
 
     }
-  
-  //close handle and get output 
-  for (int i = 0; i < len; i++) 
+
+  //close handle and get output
+  for (int i = 0; i < len; i++)
     {
       /* original */ //pthread_join(ts[i], &status);	//cf. for linux
       pthread_join(ts[i], NULL);	//cf. for linux
       //WaitForSingleObject(ts[i],INFINITE);
       Output[i]=td[i].C;
       s_free(td[i].T);
-      //CloseHandle(ts[i]);	
+      //CloseHandle(ts[i]);
       close(ts[i]);
     }
-  s_free(td);	
+  s_free(td);
   s_free(ts);
   return(Output);
 }

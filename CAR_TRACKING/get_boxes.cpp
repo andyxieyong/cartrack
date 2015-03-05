@@ -13,7 +13,7 @@
 
 //Header files
 #include "MODEL_info.h"				//File information
-#include "get_boxes_func.h"			//external functions 
+#include "get_boxes_func.h"			//external functions
 #include "Common.h"
 
 #include "switch_float.h"
@@ -29,14 +29,14 @@
 
 //subfunctions for detection
 
-FLOAT *padarray(FLOAT *feature,int *size,int padx,int pady);		//padd zeros to image 
+FLOAT *padarray(FLOAT *feature,int *size,int padx,int pady);		//padd zeros to image
 FLOAT *flip_feat(FLOAT *feat,int *size);							//filip feature order (to reduce calculation time)
 int *get_gmpc(FLOAT *score,FLOAT thresh,int *ssize,int *GMN);		//get good matches
 
-//calculate root rectangle-cooridnate 
-FLOAT *rootbox(int x,int y,FLOAT scale,int padx,int pady,int *rsize);	
+//calculate root rectangle-cooridnate
+FLOAT *rootbox(int x,int y,FLOAT scale,int padx,int pady,int *rsize);
 
-//calculate @art rectangle-cooridnate 
+//calculate @art rectangle-cooridnate
 FLOAT *partbox(int x,int y,int ax,int ay,FLOAT scale,int padx,int pady,int *psize,int *lx,int *ly,int *ssize);
 
 //calculate accumulated HOG detector score
@@ -60,7 +60,7 @@ void free_boxes(FLOAT **boxes,int LofFeat);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //sub functions
-//padd zeros to image 
+//padd zeros to image
 FLOAT *padarray(FLOAT *feature,int *size,int padx,int pady)
 {
 	const int NEW_Y=size[0]+pady*2;
@@ -75,7 +75,7 @@ FLOAT *padarray(FLOAT *feature,int *size,int padx,int pady)
 	for(int ii=0;ii<size[2];ii++)	//31
 	{
 		P+=L; //row-all
-		for(int jj=0;jj<size[1];jj++)	
+		for(int jj=0;jj<size[1];jj++)
 		{
 			P+=pady;
 			//memcpy_s(P,M_S,S,M_S);
@@ -94,7 +94,7 @@ FLOAT *padarray(FLOAT *feature,int *size,int padx,int pady)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//flip feat 
+//flip feat
 FLOAT *flip_feat(FLOAT *feat,int *size)
 {
 	const int ORD[31]={10,9,8,7,6,5,4,3,2,1,18,17,16,15,14,13,12,11,19,27,26,25,24,23,22,21,20,30,31,28,29};
@@ -122,27 +122,27 @@ FLOAT *flip_feat(FLOAT *feat,int *size)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//get good-matched pixel-coordinate 
+//get good-matched pixel-coordinate
 int *get_gmpc(FLOAT *score,FLOAT thresh,int *ssize,int *GMN)
 {
   const int L = ssize[0]*ssize[1];
   FLOAT *P=score;
   int NUM=0;
   FLOAT MAX_SCORE=thresh;
-  
+
   for(int ii=0;ii<L;ii++)
     {
-      if(*P>thresh) 
+      if(*P>thresh)
         {
-          NUM++;	
+          NUM++;
           if(*P>MAX_SCORE) MAX_SCORE=*P;
         }
       P++;
     }
-  
-  int *Out =(int*)malloc(NUM*2*sizeof(int));		
+
+  int *Out =(int*)malloc(NUM*2*sizeof(int));
   P=score;
-  
+
   int ii=0,qq=0;
   while(qq<NUM)
     {
@@ -164,7 +164,7 @@ int *get_gmpc(FLOAT *score,FLOAT thresh,int *ssize,int *GMN)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//get root-box pixel coordinate 
+//get root-box pixel coordinate
 FLOAT *rootbox(int x,int y,FLOAT scale,int padx,int pady,int *rsize)
 {
 	FLOAT *Out=(FLOAT*)malloc(sizeof(FLOAT)*4);
@@ -179,7 +179,7 @@ FLOAT *rootbox(int x,int y,FLOAT scale,int padx,int pady,int *rsize)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//get part-box pixel coordinate 
+//get part-box pixel coordinate
 //partbox(PA,x,y,ax[pp],ay[pp],scale,padx,pady,Pd_size,Ix[pp],Iy[pp],Isize);
 FLOAT *partbox(int x,int y,int ax,int ay,FLOAT scale,int padx,int pady,int *psize,int *lx,int *ly,int *ssize)
 {
@@ -248,7 +248,7 @@ void calc_a_score(FLOAT *ac_score,FLOAT *score,int *ssize,int *rsize,Model_info 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//detect boundary box 
+//detect boundary box
 FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,FLOAT *A_SCORE,FLOAT thresh)
 {
 	//constant parameters
@@ -278,19 +278,19 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 
 
 	int **RF_size = MO->RF->root_size;
-	int *rootsym = MO->RF->rootsym;	
-	int *part_sym = MO->PF->part_sym;	
+	int *rootsym = MO->RF->rootsym;
+	int *part_sym = MO->PF->part_sym;
 	int **part_size = MO->PF->part_size;
 	FLOAT **rootfilter = MO->RF->rootfilter;
 	FLOAT **partfilter=MO->PF->partfilter;
 	int **psize = MO->MI->psize;
 
-	int *rm_size = (int*)malloc(sizeof(int)*NoC*2);				//size of root-matching-score-matrix 	
-	int *pm_size = (int*)malloc(sizeof(int)*NoP*2);				//size of part-matching-score-matrix 
+	int *rm_size = (int*)malloc(sizeof(int)*NoC*2);				//size of root-matching-score-matrix
+	int *pm_size = (int*)malloc(sizeof(int)*NoP*2);				//size of part-matching-score-matrix
 
 	FLOAT **Tboxes=(FLOAT**)calloc(LofFeat,sizeof(FLOAT*));		//box coordinate information(Temp)
-	int  *b_nums =(int*)calloc(LofFeat,sizeof(int));				//length of Tboxes 
-	int count = 0;													
+	int  *b_nums =(int*)calloc(LofFeat,sizeof(int));				//length of Tboxes
+	int count = 0;
 	int D_NUMS=0;													//number of detected boundary box
 
 ///////level
@@ -301,7 +301,7 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 
 		//matched score (root and part)
 		FLOAT **rootmatch,**partmatch;
-		//matched score size matrix 
+		//matched score size matrix
 		FLOAT scale=(FLOAT)sbin/scales[level];
 
 
@@ -313,21 +313,21 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 		}
 
 		///////root calculation/////////
-		
+
 		//convolve feature maps with filters
 		int PADsize[3]={FSIZE[level*2],FSIZE[level*2+1],31};
-		FLOAT *featp=padarray(features[level],PADsize,padx,pady);	//pad zero to matrix  
+		FLOAT *featp=padarray(features[level],PADsize,padx,pady);	//pad zero to matrix
 		FLOAT *flipfeat =flip_feat(featp,PADsize);					//flip features (to reduce calculation time)
-		
+
 		//calculate model score (only root)
         gettimeofday(&tv_root_score_start, NULL);
-		rootmatch =fconvsMT(featp,flipfeat,rootfilter,rootsym,1,NoR,PADsize,RF_size,rm_size);	
+		rootmatch =fconvsMT(featp,flipfeat,rootfilter,rootsym,1,NoR,PADsize,RF_size,rm_size);
         gettimeofday(&tv_root_score_end, NULL);
         tvsub(&tv_root_score_end, &tv_root_score_start, &tv);
         time_root_score += tv.tv_sec * 1000.0 + (float)tv.tv_usec / 1000.0;
 
 
-		//release feature 
+		//release feature
 		s_free(featp);
 		s_free(flipfeat);
 
@@ -336,35 +336,35 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 		{
 			//convolve feature maps with filters
 			int PADsize2[3]={FSIZE[L*2],FSIZE[L*2+1],31};
-			featp=padarray(features[L],PADsize2,padx*2,pady*2);			//pad zero to matrix 
+			featp=padarray(features[L],PADsize2,padx*2,pady*2);			//pad zero to matrix
 			flipfeat=flip_feat(featp,PADsize2);						//flip features (to reduce calculation time)
-			
+
 			//calculate model score (only part)
             gettimeofday(&tv_part_score_start, NULL);
 			partmatch =fconvsMT(featp,flipfeat,partfilter,part_sym,1,NoP,PADsize2,part_size,pm_size);
-            gettimeofday(&tv_part_score_end, NULL);		
+            gettimeofday(&tv_part_score_end, NULL);
             tvsub(&tv_part_score_end, &tv_part_score_start, &tv);
             time_part_score += tv.tv_sec * 1000.0 + (float)tv.tv_usec / 1000.0;
 
-		
+
 			//release feature
 			s_free(featp);
 			s_free(flipfeat);
 		}
-				
+
 ////nucom
 		//combine root and part score and detect boundary box for each-component
 		for(int jj=0;jj<NoC;jj++)
 		{
 			//root score + offset
-			int RL = rm_size[jj*2]*rm_size[jj*2+1];					//length of root-matching 
+			int RL = rm_size[jj*2]*rm_size[jj*2+1];					//length of root-matching
 			int RI = MO->MI->ridx[jj];								//root-index
 			int OI = MO->MI->oidx[jj];								//offset-index
 			int RL_S =sizeof(FLOAT)*RL;
 
 			FLOAT OFF = MO->MI->offw[RI];							//offset information
 			FLOAT *SCORE = (FLOAT*)malloc(RL_S);		//Matching score matrix
-			
+
 			//add offset
 			//memcpy_s(SCORE,RL_S,rootmatch[jj],RL_S);
                             memcpy(SCORE, rootmatch[jj],RL_S);
@@ -372,7 +372,7 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 			FLOAT *SC_E = SCORE+RL;
 			while(SC_S<SC_E) *(SC_S++)+=OFF;
 
-			//root matching size 			
+			//root matching size
 			int R_S[2]={rm_size[jj*2],rm_size[jj*2+1]};
 			int SNJ =sizeof(int*)*numpart[jj];
 
@@ -384,18 +384,18 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 			int **Ix =(int**)malloc(SNJ);
 			int **Iy =(int**)malloc(SNJ);
 
-			
+
             //			printf("Ix:%p,  Iy:%p\n",Ix,Iy);
-		
+
 			//add parts
 			if(NoP>0)
-			{			
+			{
 				for (int kk=0;kk<numpart[jj];kk++)
 				{
 					int DIDX = MO->MI->didx[jj][kk];
 					int DID_4 = DIDX*4;
 					int PIDX = MO->MI->pidx[jj][kk];
-					//anchor 
+					//anchor
 					ax[kk] = MO->MI->anchor[DIDX*2]+1;
 					ay[kk] = MO->MI->anchor[DIDX*2+1]+1;
 					//set part-match
@@ -403,34 +403,34 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 					//size of part-matching
 					int PSSIZE[2] ={pm_size[PIDX*2],pm_size[PIDX*2+1]};
 
-					FLOAT *Q = match;					
+					FLOAT *Q = match;
 					for(int ss=0;ss<PSSIZE[0]*PSSIZE[1];ss++) *(Q++)*=-1;
 
 					//index matrix
 					Ix[kk] =(int*)malloc(sizeof(int)*PSSIZE[0]*PSSIZE[1]);
 					Iy[kk] =(int*)malloc(sizeof(int)*PSSIZE[0]*PSSIZE[1]);
 
-					//decide position of part for all pixels 
+					//decide position of part for all pixels
                     gettimeofday(&tv_dt_start, NULL);
 					FLOAT *M = dt(match,MO->MI->def[DID_4],MO->MI->def[DID_4+1],MO->MI->def[DID_4+2],MO->MI->def[DID_4+3],PSSIZE,Ix[kk],Iy[kk]);
                     gettimeofday(&tv_dt_end, NULL);
                     tvsub(&tv_dt_end, &tv_dt_start, &tv);
                     time_dt += tv.tv_sec * 1000.0 + (float)tv.tv_usec / 1000.0;
 
-					
-					//add part score 
+
+					//add part score
 					add_part_calculation(SCORE,M,R_S,PSSIZE,ax[kk],ay[kk]);
 					s_free(M);
 				}
 			}
-					
+
 			//get all good matches
 			int GMN;
 			int *GMPC = get_gmpc(SCORE,thresh,R_S,&GMN);
 			int RSIZE[2]={MO->MI->rsize[jj*2],MO->MI->rsize[jj*2+1]};
-			
+
 			int GL = (numpart[jj]+1)*4+3;  //31
-			
+
 			//calculate accumulated score
             gettimeofday(&tv_calc_a_score_start, NULL);
 			calc_a_score(A_SCORE,SCORE,R_S,RSIZE,MO->MI,scale);
@@ -439,7 +439,7 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
             time_calc_a_score += tv.tv_sec * 1000.0 + (float)tv.tv_usec / 1000.0;
 
 
-			//detected box coordinate(current level) 
+			//detected box coordinate(current level)
 			FLOAT *t_boxes = (FLOAT*)calloc(GMN*GL,sizeof(FLOAT));
 
 			for(int kk=0;kk<GMN;kk++)
@@ -454,13 +454,13 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
                 memcpy(P_temp, RB,sizeof(FLOAT)*4);
 				s_free(RB);
 				P_temp+=4;
-				
+
 				for(int pp=0;pp<numpart[jj];pp++)
 				{
 					int PBSIZE[2]={psize[jj][pp*2],psize[jj][pp*2+1]};
 					int Isize[2]={pm_size[MO->MI->pidx[jj][pp]*2],pm_size[MO->MI->pidx[jj][pp]*2+1]};
 
-					//calculate part box coordinate 
+					//calculate part box coordinate
 					FLOAT *PB = partbox(x,y,ax[pp],ay[pp],scale,padx,pady,PBSIZE,Ix[pp],Iy[pp],Isize);
 					//memcpy_s(P_temp,sizeof(FLOAT)*4,PB,sizeof(FLOAT)*4);
                     memcpy(P_temp, PB,sizeof(FLOAT)*4);
@@ -468,7 +468,7 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 					s_free(PB);
 				}
 				//component number and score
-				*(P_temp++)=(FLOAT)jj;					//component number 
+				*(P_temp++)=(FLOAT)jj;					//component number
 				*(P_temp++)=SCORE[x*R_S[0]+y];			//score of good match
 				*P_temp = scale;
 			}
@@ -478,32 +478,32 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 			else Tboxes[count]=NULL;
 			b_nums[count]=GMN;
 			count++;
-			D_NUMS+=GMN;			//number of detected box 
+			D_NUMS+=GMN;			//number of detected box
 
-			//release 
+			//release
 			s_free(GMPC);
 			s_free(SCORE);
 			s_free(ax);
 			s_free(ay);
 			//printf("Ix[0]:%p,  Iy[0]:%p\n",Ix[0],Iy[0]);
 			for(int ss=0;ss<numpart[jj];ss++)
-			
+
 			 {
                //			   printf("Ix[%d]:%p,  Iy[%d]:%p\n",ss,Ix[ss],ss,Iy[ss]);
 			   s_free(Ix[ss]);
 			   s_free(Iy[ss]);
 			}
-			
+
             //			printf("Ix2:%p,  Iy2:%p\n", Ix,Iy);
 			free(Ix);
-			//s_free(Ix);		
+			//s_free(Ix);
 			//s_free(Iy);
-			
+
 		}
 ////numcom
-		
+
 		free_rootmatch(rootmatch,MO);
-		free_partmatch(partmatch,MO);	
+		free_partmatch(partmatch,MO);
 	}
 ////level
 
@@ -513,8 +513,8 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
     printf("calc_a_score : %f\n", time_calc_a_score);
 
 
-	//release 
-	s_free(rm_size);	
+	//release
+	s_free(rm_size);
 	s_free(pm_size);
 
 	//Output boundary-box coorinate information
@@ -558,11 +558,11 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 		for(int ii=0;ii<MO->MI->IM_HEIGHT*MO->MI->IM_WIDTH;ii++){A_SCORE[ii]*=ac_ratio;}
 	}
 
-	//release 
+	//release
 	free_boxes(Tboxes,LofFeat);
 	s_free(b_nums);
 
-	//output result 
+	//output result
 	*Dnum=D_NUMS;
 	return(boxes);
 }
@@ -576,17 +576,17 @@ FLOAT *get_boxes(FLOAT **features,FLOAT *scales,int *FSIZE,MODEL *MO,int *Dnum,F
 
 ////release functions //////
 
-//free root-matching result 
+//free root-matching result
 
 void free_rootmatch(FLOAT **rootmatch, MODEL *MO)
 {
 	if(rootmatch!=NULL)
 	{
 		for(int ii=0;ii<MO->RF->NoR;ii++)
-		{	
+		{
 		  //s_free(rootmatch[ii]);
 		  free(rootmatch[ii]);
-		  
+
 		}
 		s_free(rootmatch);
 	}
@@ -596,7 +596,7 @@ void free_rootmatch(FLOAT **rootmatch, MODEL *MO)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//free part-matching result 
+//free part-matching result
 
 void free_partmatch(FLOAT **partmatch, MODEL *MO)
 {
@@ -614,7 +614,7 @@ void free_partmatch(FLOAT **partmatch, MODEL *MO)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//free detected boxes result 
+//free detected boxes result
 
 void free_boxes(FLOAT **boxes, int LofFeat)
 {

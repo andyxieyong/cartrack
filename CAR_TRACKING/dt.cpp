@@ -17,7 +17,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //definiton of functions//
 
-//sub functions 
+//sub functions
 
 #define s_free(a) {free(a);a=NULL;}
 
@@ -27,14 +27,14 @@ inline void dt_helper(FLOAT *src, FLOAT *dst, int *ptr, int step, int s1, int s2
 void dt1d(FLOAT *src, FLOAT *dst, int *ptr, int step, int n, FLOAT a, FLOAT b) ;
 
 //add part score to root score (extended to featurepyramid.cpp)
-void add_part_calculation(FLOAT *score, FLOAT*M,int *rootsize,int *partsize,int ax,int ay);		
+void add_part_calculation(FLOAT *score, FLOAT*M,int *rootsize,int *partsize,int ax,int ay);
 //decide best part position (extended to featurepyramid.cpp)
 FLOAT *dt(FLOAT *vals,FLOAT ax,FLOAT bx,FLOAT ay,FLOAT by,int *dims,int *Ix,int *Iy);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//add part score to root score 
+//add part score to root score
 void add_part_calculation(FLOAT *score, FLOAT*M,int *rootsize,int *partsize,int ax,int ay)
 {
 	FLOAT *S = score;
@@ -43,7 +43,7 @@ void add_part_calculation(FLOAT *score, FLOAT*M,int *rootsize,int *partsize,int 
 	int axm = ax-1;
 
 	//add part score(resolution of part is 2x of root)
-	for(int jj=axm;jj<=jj_L;jj+=2)	
+	for(int jj=axm;jj<=jj_L;jj+=2)
 	{
 		int L = jj*partsize[0];
 		for(int ii=ay;ii<=ii_L;ii+=2)
@@ -58,9 +58,9 @@ void add_part_calculation(FLOAT *score, FLOAT*M,int *rootsize,int *partsize,int 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // dt helper function
-inline void dt_helper(FLOAT *src, FLOAT *dst, int *ptr, int step, int s1, int s2, int d1, int d2, FLOAT a, FLOAT b) 
+inline void dt_helper(FLOAT *src, FLOAT *dst, int *ptr, int step, int s1, int s2, int d1, int d2, FLOAT a, FLOAT b)
 {
- if (d2 >= d1) 
+ if (d2 >= d1)
  {
 	 int d = (d1+d2) >> 1;
 	 int ds =d*step;
@@ -70,7 +70,7 @@ inline void dt_helper(FLOAT *src, FLOAT *dst, int *ptr, int step, int s1, int s2
 	 {
 		 int t1 = d-s;
 		 int t2 = d-p;
-		 if (src_ss + a*t1*t1 + b*t1 > *(src+p*step) + a*t2*t2 + b*t2) 
+		 if (src_ss + a*t1*t1 + b*t1 > *(src+p*step) + a*t2*t2 + b*t2)
 		 {
 			 s = p;
 			 src_ss = *(src+s*step);
@@ -87,8 +87,8 @@ inline void dt_helper(FLOAT *src, FLOAT *dst, int *ptr, int step, int s1, int s2
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//sub function of dt 
-void dt1d(FLOAT *src, FLOAT *dst, int *ptr, int step, int n, FLOAT a, FLOAT b) 
+//sub function of dt
+void dt1d(FLOAT *src, FLOAT *dst, int *ptr, int step, int n, FLOAT a, FLOAT b)
 {
   dt_helper(src, dst, ptr, step, 0, n-1, 0, n-1, a, b);
 }
@@ -120,9 +120,9 @@ FLOAT *dt(FLOAT *vals,FLOAT ax,FLOAT bx,FLOAT ay,FLOAT by,int *dims,int *Ix,int 
 	int *IX_P = Ix;
 	int *IY_P = Iy;
 	int *tmpIx_P=tmpIx;
-	for (int x = 0; x < dims[1]; x++) 
+	for (int x = 0; x < dims[1]; x++)
 	{
-		for (int y = 0; y < dims[0]; y++) 
+		for (int y = 0; y < dims[0]; y++)
 		{
 			*(IX_P++) = *tmpIx_P;
 			*(IY_P++) = tmpIy[*tmpIx_P*dims[0]+y];

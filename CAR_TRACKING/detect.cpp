@@ -8,9 +8,9 @@
 
 
 //OpenCV library
-//#include "cv.h"			
+//#include "cv.h"
 //#include "cxcore.h"
-//#include "highgui.h"	
+//#include "highgui.h"
 /*
 #include "C:\OpenCV2.0\include\opencv\cv.h"
 #include "C:\OpenCV2.0\include\opencv\highgui.h"
@@ -21,16 +21,16 @@
 #include "cxcore.h"
 #ifdef _DEBUG
     //Debugモードの場合
-    #pragma comment(lib,"cv200d.lib") 
-    #pragma comment(lib,"cxcore200d.lib") 
-    #pragma comment(lib,"cvaux200d.lib") 
-    #pragma comment(lib,"highgui200d.lib") 
+    #pragma comment(lib,"cv200d.lib")
+    #pragma comment(lib,"cxcore200d.lib")
+    #pragma comment(lib,"cvaux200d.lib")
+    #pragma comment(lib,"highgui200d.lib")
 #else
     //Releaseモードの場合
-    #pragma comment(lib,"cv200.lib") 
-    #pragma comment(lib,"cxcore200.lib") 
-    #pragma comment(lib,"cvaux200.lib") 
-    #pragma comment(lib,"highgui200.lib") 
+    #pragma comment(lib,"cv200.lib")
+    #pragma comment(lib,"cxcore200.lib")
+    #pragma comment(lib,"cvaux200.lib")
+    #pragma comment(lib,"highgui200.lib")
 #endif
 //C++ library
 #include <stdio.h>
@@ -57,7 +57,7 @@
 //resize Image (IplImage)
 IplImage *ipl_resize(IplImage *IM,FLOAT ratio);
 
-//create and resize Iplimage 
+//create and resize Iplimage
 IplImage *ipl_cre_resize(IplImage *IM,int width,int height);
 
 //initialize accumulated score
@@ -82,19 +82,19 @@ IplImage *ipl_resize(IplImage *IM,FLOAT ratio)
 {
 	IplImage *R_I;	//Output (Resized Image)
 
-	//parameters 
+	//parameters
 	const int height = IM->height;
 	const int width = IM->width;
 
 	const int UpY = height/10;
 	const int NEW_Y = height-UpY-height/10;
-	
+
 	const int depth = IM->depth;
 	const int nChannels = IM->nChannels;
 
 	//set ROI
 	CvRect REC = cvRect(0,UpY,width,NEW_Y);
-	cvSetImageROI(IM,REC);			//change ROI of Image 
+	cvSetImageROI(IM,REC);			//change ROI of Image
 
 	if((int)((FLOAT)IM->height*ratio)==IM->height)
 	{
@@ -107,7 +107,7 @@ IplImage *ipl_resize(IplImage *IM,FLOAT ratio)
 		cvResize(IM,R_I);	//resize
 	}
 	cvResetImageROI(IM);
-	//printf("ORIGINAL Image size [%d %d]\n",R_I->height,R_I->width);  
+	//printf("ORIGINAL Image size [%d %d]\n",R_I->height,R_I->width);
 
 	return(R_I);
 }
@@ -156,7 +156,7 @@ FLOAT *detect(IplImage *IM,MODEL *MO,FLOAT thresh,int *D_NUMS,FLOAT *A_SCORE)
 	//calculate feature pyramid
 	t1=clock();
     gettimeofday(&tv_calc_f_pyramid_start, NULL);
-	FLOAT **feature=calc_f_pyramid(IM,MO->MI,featsize,scales);		
+	FLOAT **feature=calc_f_pyramid(IM,MO->MI,featsize,scales);
     gettimeofday(&tv_calc_f_pyramid_end, NULL);
     tvsub(&tv_calc_f_pyramid_end, &tv_calc_f_pyramid_start, &tv);
     printf("\n");
