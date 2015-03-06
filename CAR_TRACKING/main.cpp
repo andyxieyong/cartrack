@@ -145,6 +145,14 @@ int main(int argc, char* argv[])
     std::string line_contents;
     getline(ifs, line_contents); // skip first header line
 
+    /* Open detect result log file */
+    FILE* log_fp;
+	if ((log_fp = fopen("ImageSet_proccess_log.txt","w")) == NULL)
+      {
+        printf("log file cannot open\n");
+        printf("program termited\n");
+        return -1;
+      }
 	//load laser and movie data
 	//for(int im=ss;im<2000;im++)
 
@@ -281,6 +289,26 @@ int main(int argc, char* argv[])
 
 		//update result
 		//update_result(LR,CUR);												//update_result
+
+        /* write ImageSet detection log */
+        char correctness;
+        if (groundTruth == -1)
+          {
+            if (CUR->num == 0)
+              correctness = 'T';
+            else
+              correctness = 'F';
+            fprintf(log_fp, "%06d %d %d %c\n", image_id, CUR->num, groundTruth, correctness);
+          }
+        else
+          {
+            if (CUR->num > 0)
+              correctness = 'T';
+            else
+              correctness = 'F';
+            fprintf(log_fp, "%06d %d  %d %c\n", image_id, CUR->num, groundTruth, correctness);
+          }
+
         s_free(CUR);
         s_free(A_SCORE);
 		//save result
@@ -329,6 +357,9 @@ int main(int argc, char* argv[])
 		printf("No %d\n",fnum);
 
 	}
+
+    /* Close detect result log file */
+    fclose(log_fp);
 
 	//close window
 	cvDestroyWindow(WIN_A);	//destroy window
