@@ -643,7 +643,6 @@ FLOAT **calc_f_pyramid(IplImage *Image,Model_info *MI,int *FTSIZE,FLOAT *scale)	
       memcpy(&FTSIZE[td[ss].F_C*2], td[ss].FSIZE,sizeof(int)*2);
       //printf("ÉfÅ[É^2Å®%d,%d\n",FTSIZE[td[ss].F_C*2],td[ss].FSIZE);
       //CloseHandle(ts[ss]);
-      close(ts[ss]);
     }
 
   //release original image

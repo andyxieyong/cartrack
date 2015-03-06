@@ -320,7 +320,6 @@ FLOAT **fconvsMT(FLOAT*feat,FLOAT*flfeat,FLOAT**filter,int *sym_info,int start,i
       Output[i]=td[i].C;
       s_free(td[i].T);
       //CloseHandle(ts[i]);
-      close(ts[i]);
     }
   s_free(td);
   s_free(ts);
