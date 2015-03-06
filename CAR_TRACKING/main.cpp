@@ -253,9 +253,9 @@ int main(int argc, char* argv[])
 		int D_NUMS=0;								//# of detected-object
 
 		//IplImage *R_I = ipl_resize(IM_D,ratio);								//trime image for detection
-		IplImage *R_I = IM_D;
-		FLOAT *A_SCORE = ini_ac_score(R_I);								//alloc accumulated score
-		RESULT *CUR=car_detection(R_I,MO,thresh,&D_NUMS,A_SCORE,overlap);	//detect car-boundary boxes
+
+		FLOAT *A_SCORE = ini_ac_score(IM_D);								//alloc accumulated score
+		RESULT *CUR=car_detection(IM_D,MO,thresh,&D_NUMS,A_SCORE,overlap);	//detect car-boundary boxes
 		//finalization(CUR,LR,&P_I,A_SCORE,R_I,TH_length);					//calculate tracking information
 
 		//////////////////////////////////////
@@ -281,7 +281,8 @@ int main(int argc, char* argv[])
 
 		//update result
 		//update_result(LR,CUR);												//update_result
-
+        s_free(CUR);
+        s_free(A_SCORE);
 		//save result
 		/*	IplImage **cimg = (IplImage **) cvAlloc (sizeof (IplImage *) * 2);
 			IplImage *SaveIm = ini_Image(IM_D->width+480,480);*/
@@ -320,8 +321,9 @@ int main(int argc, char* argv[])
 #endif
 		//release data
 		//Release_sdata(Sdata);						//release scan point data
-		cvReleaseImage(&R_I);						//release resized image
-		//cvReleaseImage(&IM_D);						//release detected image
+
+        //        R_I = NULL;
+		cvReleaseImage(&IM_D);						//release detected image
 
 		fnum++;
 		printf("No %d\n",fnum);
