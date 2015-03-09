@@ -194,6 +194,8 @@ FLOAT *ini_scales(Model_info *MI,IplImage *IM,int X,int Y) //X,Y length of image
 	{
 		interval = MI->interval;
 		max_scale = MI->max_scale;
+        MI->IM_HEIGHT = IM->height;
+        MI->IM_WIDTH = IM->width;
 	}
 
 	//return
@@ -642,7 +644,6 @@ FLOAT **calc_f_pyramid(IplImage *Image,Model_info *MI,int *FTSIZE,FLOAT *scale)	
       memcpy(&FTSIZE[td[ss].F_C*2], td[ss].FSIZE,sizeof(int)*2);
       //printf("ÉfÅ[É^2Å®%d,%d\n",FTSIZE[td[ss].F_C*2],td[ss].FSIZE);
       //CloseHandle(ts[ss]);	
-      close(ts[ss]);
     }
   
   //release original image 
